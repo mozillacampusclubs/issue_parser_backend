@@ -11,7 +11,7 @@ from rest_framework import status
 from requests.exceptions import ConnectionError
 
 from .models import (UserRepo, parse_issue, validate_and_store_issue, Issue, delete_closed_issues, 
-                     is_issue_valid, is_issue_state_open, periodic_issues_updater)
+                     is_issue_valid, is_issue_state_open, periodic_issues_updater, Region)
 from .utils.mock_api import api_response_issues
 from .utils.services import request_github_issues
 
@@ -63,6 +63,29 @@ class UserRepoModelTestCase(TestCase):
         new_count = UserRepo.objects.count()
         self.assertEqual(old_count, new_count)
 
+class RegionModelTestCase(TestCase):
+    """This class defines the test suite for the `Region` model."""
+    
+    def setUp(self):
+        """Define the test client and other test variables."""
+        self.region_name = 'razat249'
+        self.region_image = 'github-view'
+        self.region_instance = Region(region_name=self.region_name, region_image=self.region_image)
+
+    def test_region_model_can_create_region(self):
+        """Tests `Region` model can create Regions"""
+        old_count = Region.objects.count()
+        self.region_instance.save()
+        new_count = Region.objects.count()
+        self.assertNotEqual(old_count, new_count)
+
+    def test_region_model_can_delete_region(self):
+        """Tests `Region` model can delete Regions"""
+        old_count = Region.objects.count()
+        self.region_instance.save()
+        self.region_instance.delete()
+        new_count = Region.objects.count()
+        self.assertEqual(old_count, new_count)
 
 class IssueModelAndFetcherTestCase(TestCase):
     """This class defines the test suite for the `issue fetcher` component."""

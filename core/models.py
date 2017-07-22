@@ -25,6 +25,10 @@ class UserRepo(models.Model):
     def __str__(self):
         return '/%s/%s' % (self.user, self.repo)
 
+class Region(models.Model):
+    """Used to store data for different regions."""
+    region_name = models.CharField(max_length=100)
+    region_image = models.URLField(blank=True)
 
 class IssueLabel(models.Model):
     """
