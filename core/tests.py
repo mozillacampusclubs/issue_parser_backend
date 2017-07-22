@@ -158,9 +158,26 @@ class ViewTestCase(TestCase):
 
     def setUp(self):
         """Define the test client and other test variables."""
+        self.mock_regions = ["a", "n", "e", "b", "d", "c"]        
         self.client = APIClient()
         for issue in api_response_issues:
             validate_and_store_issue(issue)
+
+    def test_api_can_get_region_list(self):
+        """Test the api can get given region list."""
+        response = self.client.get('/regionlist/', format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_api_can_get_region_list_ordered_by_name(self):
+        """Test the api gives list of regions in accessending order."""
+        for s in self.mock_regions:
+            region_list = Region(region_name=s)
+            region_list.save()
+        response = self.client.get('/regionlist/', format="json")
+        response_content = json.loads(response.content)
+        sorted_mock_regions = sorted(self.mock_regions)
+        for i in xrange(len(sorted_mock_regions)):
+            self.assertEqual(sorted_mock_regions[i], response_content[i]['region_name'])
 
     def test_api_can_get_metadata(self):
         """Test the api can get given metadata."""

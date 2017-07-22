@@ -19,6 +19,7 @@ from core import views
 from django.contrib import admin
 
 urlpatterns = [
+    url(r'^regionlist/$', views.RegionList.as_view()),
     url(r'^userrepos/$', views.UserRepoList.as_view()),
     url(r'^issues/$', views.IssueList.as_view()),
     url(r'^metadata/$', views.MetaData.as_view()),

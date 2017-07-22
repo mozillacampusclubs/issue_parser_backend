@@ -14,6 +14,9 @@ class Region(models.Model):
     region_name = models.CharField(max_length=100)
     region_image = models.URLField(blank=True)
 
+    class Meta:
+        ordering = ('region_name',) # Ascending order according to region name.
+
 class UserRepo(models.Model):
     """
     UserRepo model is used to store the username and repo-name

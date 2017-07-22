@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import UserRepo, Issue, IssueLabel
+from core.models import UserRepo, Issue, IssueLabel, Region
 
 
 class UserRepoSerializer(serializers.ModelSerializer):
@@ -20,6 +20,15 @@ class IssueLabelSerializer(serializers.ModelSerializer):
         fields = ('label_id', 'label_name', 'label_color', 'label_url',)
 
 
+class RegionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for `Region` Model.
+    """
+    class Meta:
+        model = Region
+        fields = ('id','region_name', 'region_image',)
+
+
 class IssueSerializer(serializers.ModelSerializer):
     """
     Serializer for `Issue` Model.
@@ -30,4 +39,4 @@ class IssueSerializer(serializers.ModelSerializer):
         model = Issue
         fields = ('issue_id', 'title', 'experience_needed', 'expected_time',
             'language', 'tech_stack', 'created_at', 'updated_at',
-            'issue_number', 'issue_labels', 'issue_url', 'issue_body')
+            'issue_number', 'issue_labels', 'issue_url', 'issue_body', 'regions',)

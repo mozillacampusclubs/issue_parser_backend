@@ -1,5 +1,5 @@
-from core.models import UserRepo, Issue
-from core.serializers import UserRepoSerializer, IssueSerializer
+from core.models import UserRepo, Issue, Region
+from core.serializers import UserRepoSerializer, IssueSerializer, RegionSerializer
 from rest_framework import generics
 from  django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
@@ -16,6 +16,14 @@ class UserRepoList(generics.ListAPIView):
     serializer_class = UserRepoSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ('repo', 'user',)
+
+
+class RegionList(generics.ListAPIView):
+    """
+    Returns a list of regions.
+    """
+    queryset = Region.objects.all()
+    serializer_class = RegionSerializer
 
 
 class IssueList(generics.ListAPIView):
