@@ -9,6 +9,11 @@ from celery.decorators import periodic_task
 
 ISSUE_UPDATE_PERIOD = 15 # in minutes
 
+class Region(models.Model):
+    """Used to store data for different regions."""
+    region_name = models.CharField(max_length=100)
+    region_image = models.URLField(blank=True)
+
 class UserRepo(models.Model):
     """
     UserRepo model is used to store the username and repo-name
@@ -16,6 +21,7 @@ class UserRepo(models.Model):
     """
     user = models.CharField(max_length=100)
     repo = models.CharField(max_length=100)
+    regions = models.ManyToManyField(Region)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -24,11 +30,6 @@ class UserRepo(models.Model):
 
     def __str__(self):
         return '/%s/%s' % (self.user, self.repo)
-
-class Region(models.Model):
-    """Used to store data for different regions."""
-    region_name = models.CharField(max_length=100)
-    region_image = models.URLField(blank=True)
 
 class IssueLabel(models.Model):
     """
@@ -73,7 +74,8 @@ class Issue(models.Model):
     issue_labels = models.ManyToManyField(IssueLabel, blank=True)
     issue_url = models.URLField()
     issue_body = models.TextField()
-
+    regions = models.ManyToManyField(Region)
+    
     class Meta:
         ordering = ('updated_at',) # Ascending order according to updated_at.
 

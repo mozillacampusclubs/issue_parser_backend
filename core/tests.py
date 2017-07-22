@@ -68,8 +68,8 @@ class RegionModelTestCase(TestCase):
     
     def setUp(self):
         """Define the test client and other test variables."""
-        self.region_name = 'razat249'
-        self.region_image = 'github-view'
+        self.region_name = 'Mizilla India'
+        self.region_image = 'https://example.com/image.jpg'
         self.region_instance = Region(region_name=self.region_name, region_image=self.region_image)
 
     def test_region_model_can_create_region(self):
