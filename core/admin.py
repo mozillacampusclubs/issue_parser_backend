@@ -18,14 +18,31 @@ class RegionAdminInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'region_admin'
 
+
 class UserAdmin(BaseUserAdmin):
     """Define a new User admin."""
     inlines = (RegionAdminInline, )
 
-admin.site.unregister(Group)
+
+class UserRepoAdmin(admin.ModelAdmin):
+    """Used to alter `UserRepo` admin site."""
+    fieldsets = (
+        (None, {
+            'fields': ('user', 'repo',)
+        }),
+    )
+    
+    def save_form(self, request, form, change):
+        """Automatically fills author by extracting it from currunt login user."""
+        obj = super( UserRepoAdmin, self).save_form(request, form, change)
+        if not change:
+            obj.author = request.user
+        return obj
+
 # Re-register UserAdmin
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.register(RegionAdmin)
 
-admin.site.register(UserRepo)
+admin.site.register(UserRepo, UserRepoAdmin)
 admin.site.register(Region)
