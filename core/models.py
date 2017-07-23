@@ -4,18 +4,28 @@ from __future__ import unicode_literals
 from datetime import timedelta
 from django.db import models
 from core.utils.services import request_github_issues
-
+from django.contrib.auth.models import User
 from celery.decorators import periodic_task
 
 ISSUE_UPDATE_PERIOD = 15 # in minutes
 
+
 class Region(models.Model):
     """Used to store data for different regions."""
-    region_name = models.CharField(max_length=100)
+    region_name = models.CharField(max_length=100, unique=True)
     region_image = models.URLField(blank=True)
 
     class Meta:
         ordering = ('region_name',) # Ascending order according to region name.
+
+    def __str__(self):
+        return '%s' % (self.region_name)
+
+
+class RegionAdmin(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    regions = models.ManyToManyField(Region)
+
 
 class UserRepo(models.Model):
     """
