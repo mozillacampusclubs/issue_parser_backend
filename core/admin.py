@@ -39,6 +39,22 @@ class UserRepoAdmin(admin.ModelAdmin):
             obj.author = request.user
         return obj
 
+    def get_queryset(self, request):
+        qs = super(UserRepoAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(author=request.user)
+
+    def save_model(self, request, obj, form, change):
+        obj.author = request.user
+        super(UserRepoAdmin, self).save_model(request, obj, form, change)
+
+    def has_change_permission(self, request, obj=None):
+        if not obj:
+            return True 
+        return obj.author == request.user or request.user.is_superuser
+
+
 # Re-register UserAdmin
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
