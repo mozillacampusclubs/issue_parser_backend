@@ -40,16 +40,19 @@ class UserRepoAdmin(admin.ModelAdmin):
         return obj
 
     def get_queryset(self, request):
+        """Only let the user view their own `UserRepos`."""
         qs = super(UserRepoAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
         return qs.filter(author=request.user)
 
     def save_model(self, request, obj, form, change):
+        """Save Model"""
         obj.author = request.user
         super(UserRepoAdmin, self).save_model(request, obj, form, change)
 
     def has_change_permission(self, request, obj=None):
+        """Only give the user permissions to modify their own `UserRepos`."""
         if not obj:
             return True 
         return obj.author == request.user or request.user.is_superuser

@@ -9,9 +9,10 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
 from requests.exceptions import ConnectionError
+from django.contrib.auth.models import User
 
 from .models import (UserRepo, parse_issue, validate_and_store_issue, Issue, delete_closed_issues, 
-                     is_issue_valid, is_issue_state_open, periodic_issues_updater, Region)
+                     is_issue_valid, is_issue_state_open, periodic_issues_updater, Region, RegionAdmin)
 from .utils.mock_api import api_response_issues
 from .utils.services import request_github_issues
 
@@ -46,7 +47,10 @@ class UserRepoModelTestCase(TestCase):
         """Define the test client and other test variables."""
         self.user = 'razat249'
         self.repo = 'github-view'
-        self.user_repo = UserRepo(user=self.user, repo=self.repo)
+        self.author = User.objects.create_user(
+            username='jacob', password='top_secret'
+        )
+        self.user_repo = UserRepo(user=self.user, repo=self.repo, author=self.author)
 
     def test_user_repo_model_can_create_a_userrepo(self):
         """Test the `UserRepo` model can create a `user_repo`."""
