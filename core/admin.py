@@ -13,7 +13,7 @@ class RegionAdminInline(admin.StackedInline):
     Define an inline admin descriptor for RegionAdmin model
     which acts a bit like a singleton.
     """
-    
+
     model = RegionAdmin
     can_delete = False
     verbose_name_plural = 'region_admin'
@@ -31,7 +31,7 @@ class UserRepoAdmin(admin.ModelAdmin):
             'fields': ('user', 'repo',)
         }),
     )
-    
+
     def save_form(self, request, form, change):
         """Automatically fills author by extracting it from currunt login user."""
         obj = super( UserRepoAdmin, self).save_form(request, form, change)
@@ -54,7 +54,7 @@ class UserRepoAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         """Only give the user permissions to modify their own `UserRepos`."""
         if not obj:
-            return True 
+            return True
         return obj.author == request.user or request.user.is_superuser
 
 

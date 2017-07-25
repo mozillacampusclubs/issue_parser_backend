@@ -12,7 +12,8 @@ from requests.exceptions import ConnectionError
 from django.contrib.auth.models import User
 
 from .models import (UserRepo, parse_issue, validate_and_store_issue, Issue, delete_closed_issues, 
-                     is_issue_valid, is_issue_state_open, periodic_issues_updater, Region, RegionAdmin)
+                     is_issue_valid, is_issue_state_open, periodic_issues_updater, Region, RegionAdmin,
+                     retrive_regions_for_a_user)
 from .utils.mock_api import api_response_issues
 from .utils.services import request_github_issues
 
@@ -96,7 +97,16 @@ class IssueModelAndFetcherTestCase(TestCase):
 
     def setUp(self):
         """Initial setup for running tests."""
-        pass
+        self.USER_ID = 1
+        self.author = User.objects.create_user(
+            id=1, username='jacob', password='top_secret'
+        )
+        self.region = Region(region_name="Mozilla India")
+        self.region.save()
+        self.region_admin = RegionAdmin(user=self.author)
+        self.region_admin.save()
+        self.region_admin.regions.add(self.region)
+        self.region_queryset = Region.objects.filter(regionadmin=self.USER_ID)
 
     def test_api_can_request_issues(self):
         """Test the request function"""
@@ -143,19 +153,24 @@ class IssueModelAndFetcherTestCase(TestCase):
     def test_validate_and_store_issue(self):
         """Test for validating and storing issues."""
         old_count = Issue.objects.count()
-        validate_and_store_issue(SAMPLE_VALID_ISSUE)
+        validate_and_store_issue(SAMPLE_VALID_ISSUE, self.region_queryset)
         new_count = Issue.objects.count()
         self.assertLess(old_count, new_count)
 
     def test_api_can_delete_closed_issues_in_db(self):
         """Test for checking if issues are deleted when closed online but present in db"""
         issue = SAMPLE_VALID_ISSUE.copy()
-        validate_and_store_issue(issue)
+        validate_and_store_issue(issue, self.region_queryset)
         issue['state'] = 'closed'
         old_count = Issue.objects.count()
         delete_closed_issues(issue)
         new_count = Issue.objects.count()
         self.assertLess(new_count, old_count)
+
+    def test_retrive_regions_for_a_user(self):
+        """Test function can retrive regions for a user."""
+        regions = retrive_regions_for_a_user(self.USER_ID)
+        self.assertQuerysetEqual(regions, self.region_queryset)
 
 class ViewTestCase(TestCase):
     """This class defines the test suite for the api views."""
@@ -164,8 +179,9 @@ class ViewTestCase(TestCase):
         """Define the test client and other test variables."""
         self.mock_regions = ["a", "n", "e", "b", "d", "c"]        
         self.client = APIClient()
+        region_queryset = Region.objects.all()
         for issue in api_response_issues:
-            validate_and_store_issue(issue)
+            validate_and_store_issue(issue, region_queryset)
 
     def test_api_can_get_region_list(self):
         """Test the api can get given region list."""
