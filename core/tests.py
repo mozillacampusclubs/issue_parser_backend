@@ -9,7 +9,6 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
 from requests.exceptions import ConnectionError
-from django.contrib.auth.models import User
 
 from .models import (UserRepo, parse_issue, validate_and_store_issue, Issue, delete_closed_issues, 
                      is_issue_valid, is_issue_state_open, periodic_issues_updater, Region, RegionAdmin,
@@ -48,7 +47,7 @@ class UserRepoModelTestCase(TestCase):
         """Define the test client and other test variables."""
         self.user = 'razat249'
         self.repo = 'github-view'
-        self.author = User.objects.create_user(
+        self.author = RegionAdmin.objects.create_user(
             username='jacob', password='top_secret'
         )
         self.user_repo = UserRepo(user=self.user, repo=self.repo, author=self.author)
@@ -73,7 +72,7 @@ class RegionModelTestCase(TestCase):
     
     def setUp(self):
         """Define the test client and other test variables."""
-        self.region_name = 'Mizilla India'
+        self.region_name = 'Mozilla India'
         self.region_image = 'https://example.com/image.jpg'
         self.region_instance = Region(region_name=self.region_name, region_image=self.region_image)
 
@@ -98,14 +97,12 @@ class IssueModelAndFetcherTestCase(TestCase):
     def setUp(self):
         """Initial setup for running tests."""
         self.USER_ID = 1
-        self.author = User.objects.create_user(
-            id=1, username='jacob', password='top_secret'
+        self.author = RegionAdmin.objects.create_user(
+            id=self.USER_ID, username='jacob', password='top_secret'
         )
         self.region = Region(region_name="Mozilla India")
         self.region.save()
-        self.region_admin = RegionAdmin(user=self.author)
-        self.region_admin.save()
-        self.region_admin.regions.add(self.region)
+        self.author.regions.add(self.region)
         self.region_queryset = Region.objects.filter(regionadmin=self.USER_ID)
 
     def test_api_can_request_issues(self):
@@ -170,7 +167,7 @@ class IssueModelAndFetcherTestCase(TestCase):
     def test_retrive_regions_for_a_user(self):
         """Test function can retrive regions for a user."""
         regions = retrive_regions_for_a_user(self.USER_ID)
-        self.assertQuerysetEqual(regions, self.region_queryset)
+        self.assertEqual(regions[0], self.region_queryset[0])
 
 class ViewTestCase(TestCase):
     """This class defines the test suite for the api views."""
