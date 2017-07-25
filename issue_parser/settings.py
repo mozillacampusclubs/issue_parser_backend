@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'django_nose',  
 ]
 
+AUTH_USER_MODEL = 'core.RegionAdmin'
+
 # Use nose to run all tests
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 

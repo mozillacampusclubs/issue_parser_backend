@@ -3,9 +3,10 @@ from __future__ import unicode_literals
 
 from datetime import timedelta
 from django.db import models
-from core.utils.services import request_github_issues
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from celery.decorators import periodic_task
+
+from core.utils.services import request_github_issues
 
 ISSUE_UPDATE_PERIOD = 15 # in minutes
 
@@ -22,12 +23,8 @@ class Region(models.Model):
         return '%s' % (self.region_name)
 
 
-class RegionAdmin(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+class RegionAdmin(AbstractUser):
     regions = models.ManyToManyField(Region)
-
-    class Meta:
-        ordering = ('user',) # Ascending order according to users.
 
 
 class UserRepo(models.Model):
@@ -37,7 +34,7 @@ class UserRepo(models.Model):
     """
     user = models.CharField(max_length=100)
     repo = models.CharField(max_length=100)
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(RegionAdmin)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
