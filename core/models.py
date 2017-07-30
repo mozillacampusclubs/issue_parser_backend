@@ -35,6 +35,7 @@ class UserRepo(models.Model):
     user = models.CharField(max_length=100)
     repo = models.CharField(max_length=100)
     author = models.ForeignKey(RegionAdmin)
+    regions = models.ManyToManyField(Region)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

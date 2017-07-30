@@ -8,15 +8,18 @@ from core.models import UserRepo, Issue, IssueLabel, Region, RegionAdmin
 from django.contrib.auth.models import *
 
 
-
-
 class UserRepoAdmin(admin.ModelAdmin):
     """Used to alter `UserRepo` admin site."""
     fieldsets = (
         (None, {
-            'fields': ('user', 'repo',)
+            'fields': ('user', 'repo', 'regions')
         }),
     )
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "regions":
+            kwargs["queryset"] = Region.objects.filter(regionadmin=request.user)
+        return super(UserRepoAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
     def save_form(self, request, form, change):
         """Automatically fills author by extracting it from currunt login user."""
