@@ -17,6 +17,7 @@ class UserRepoAdmin(admin.ModelAdmin):
     )
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """Only show regions related to logged in user when filling `userrepo` form"""
         if db_field.name == "regions":
             kwargs["queryset"] = Region.objects.filter(regionadmin=request.user)
         return super(UserRepoAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
@@ -53,3 +54,4 @@ admin.site.register(RegionAdmin)
 
 admin.site.register(UserRepo, UserRepoAdmin)
 admin.site.register(Region)
+admin.site.register(Issue)

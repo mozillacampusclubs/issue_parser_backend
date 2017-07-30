@@ -101,9 +101,9 @@ def periodic_issues_updater():
     Update `Issue` model in the database in every
     `ISSUE_UPDATE_PERIOD` minutes.
     """
-    list_of_repos = UserRepo.objects.values('author', 'user', 'repo',)
+    list_of_repos = UserRepo.objects.values('id', 'user', 'repo',)
     for repo in list_of_repos:
-        region_queryset = retrive_regions_for_a_user(repo['author'])
+        region_queryset = retrive_regions_for_a_user(repo['id'])
         issue_list = request_github_issues(repo['user'], repo['repo'])
         if issue_list['error']:
             print "Error" + str(issue_list['data'])
@@ -111,9 +111,9 @@ def periodic_issues_updater():
             for issue in issue_list['data']:
                 validate_and_store_issue(issue, region_queryset)
 
-def retrive_regions_for_a_user(user_id):
+def retrive_regions_for_a_user(user_repo_id):
     """Fetches all the regions related to a user."""
-    region_queryset = Region.objects.filter(regionadmin=user_id)
+    region_queryset = Region.objects.filter(userrepo=user_repo_id)
     return region_queryset
 
 def validate_and_store_issue(issue, region_queryset):

@@ -97,13 +97,16 @@ class IssueModelAndFetcherTestCase(TestCase):
     def setUp(self):
         """Initial setup for running tests."""
         self.USER_ID = 1
+        self.USER_REPO_ID = 1
         self.author = RegionAdmin.objects.create_user(
             id=self.USER_ID, username='jacob', password='top_secret'
         )
         self.region = Region(region_name="Mozilla India")
         self.region.save()
-        self.author.regions.add(self.region)
-        self.region_queryset = Region.objects.filter(regionadmin=self.USER_ID)
+        self.user_repo = UserRepo(id=self.USER_REPO_ID, user='razat249', repo='github-view', author=self.author)
+        self.user_repo.save()
+        self.user_repo.regions.add(self.region)        
+        self.region_queryset = Region.objects.filter(userrepo=self.USER_ID)
 
     def test_api_can_request_issues(self):
         """Test the request function"""
@@ -166,7 +169,7 @@ class IssueModelAndFetcherTestCase(TestCase):
 
     def test_retrive_regions_for_a_user(self):
         """Test function can retrive regions for a user."""
-        regions = retrive_regions_for_a_user(self.USER_ID)
+        regions = retrive_regions_for_a_user(self.USER_REPO_ID)
         self.assertEqual(regions[0], self.region_queryset[0])
 
 class ViewTestCase(TestCase):
