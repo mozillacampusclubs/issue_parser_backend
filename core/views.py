@@ -1,7 +1,7 @@
-from core.models import UserRepo, Issue
-from core.serializers import UserRepoSerializer, IssueSerializer
+from core.models import UserRepo, Issue, Region
+from core.serializers import UserRepoSerializer, IssueSerializer, RegionSerializer
 from rest_framework import generics
-from  django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
@@ -18,6 +18,14 @@ class UserRepoList(generics.ListAPIView):
     filter_fields = ('repo', 'user',)
 
 
+class RegionList(generics.ListAPIView):
+    """
+    Returns a list of regions.
+    """
+    queryset = Region.objects.all()
+    serializer_class = RegionSerializer
+
+
 class IssueList(generics.ListAPIView):
     """
     Returns a list of issues, by optionally filtering against
@@ -27,7 +35,7 @@ class IssueList(generics.ListAPIView):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter,)
-    filter_fields = ('language', 'tech_stack', 'experience_needed', 'expected_time',)
+    filter_fields = ('language', 'tech_stack', 'experience_needed', 'expected_time', 'regions',)
     ordering_fields = ('experience_needed', 'expected_time')
 
 
