@@ -1,4 +1,4 @@
-django==1.11.13
+django==1.11.29
 django-filter==1.1.0
 djangorestframework==3.8.2
 requests==2.17.3
